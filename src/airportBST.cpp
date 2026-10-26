@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 #include "airportBST.h"
 
@@ -74,4 +75,67 @@ double AirportBST::AvgHeight()
     int totalNodes = 0;
     int sumDepth = SumDepth(root, 0, totalNodes);
     return sumDepth / totalNodes;
+}
+
+Airport* AirportBST::find(string code)
+{
+    Airport* curr = root;
+    int comparisons = 0;
+    cout << "Path: ";
+
+    while (curr != nullptr)
+    {
+        comparisons++;
+        cout << curr->iataCode;
+
+        if (code == curr->iataCode)
+        {
+            cout << " (Comparisons: " << comparisons << ")" << endl;
+            cout << curr->iataCode << ", " << curr->name << ", " << curr->city << ", "
+                 << curr->country << ", " << curr->icaoCode << ", "
+                 << curr->latitude << ", " << curr->longitude << endl;
+            return curr;
+        }
+        else if (code < curr->iataCode)
+        {
+            curr = curr->left;
+        }
+        else
+        {
+            curr = curr->right;
+        }
+        cout << " -> ";
+    }
+
+    cout << "(NULL) not found" << endl;
+}
+
+void AirportBST::findMin()
+{
+    if (root == nullptr) {
+        cout << "Tree is empty" << endl;
+        return;
+    }
+
+    Airport* curr = root;
+    while (curr->left != nullptr)
+    {
+        curr = curr->left;
+    }
+    cout << "Minimum: " << curr->iataCode << endl;
+}
+
+void AirportBST::findMax()
+{
+    if (root == nullptr) {
+        cout << "Tree is empty" << endl;
+        return;
+    }
+
+    Airport* curr = root;
+    while (curr->right != nullptr)
+    {
+        curr = curr->right;
+    }
+    cout << "Maximum: " << curr->iataCode << endl;
 }

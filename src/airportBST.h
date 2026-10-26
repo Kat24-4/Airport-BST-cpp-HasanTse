@@ -17,4 +17,7 @@ class AirportBST {
         string Insert(Airport* newAirport);
         int GetHeight();
         double AvgHeight();
+        Airport* find(string code);
+        void findMin();
+        void findMax();
 };
