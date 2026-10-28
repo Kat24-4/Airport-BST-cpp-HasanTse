@@ -210,6 +210,8 @@ void ShapeExperiement(ifstream& file) {
 
 int main() {
     // Task 1
+    // cout << "Task 1" << endl;
+    // cout << "======" << endl;
     ifstream airportFile("data/airports.dat");
 
     if(!airportFile.is_open()) {
@@ -221,35 +223,53 @@ int main() {
     // AirportBST aBST = BuildTree(airports); 
 
     // Task 2
+    // cout << "Task 2" << endl;
+    // cout << "======" << endl;
+    // cout << "--Find Root--" << endl;
     // aBST.Find("GKA"); // Root
+    // cout << "--Find Leaf--" << endl;
     // aBST.Find("DJJ"); // Leaf
+    // cout << "--Find Deep Node--" << endl;
     // aBST.Find("BOS"); // Deep
+    // cout << "--Find Not In Tree--" << endl;
     // aBST.Find("XYZ"); // Not in tree
+    // cout << "--Find Smaller than Smallest--" << endl;
     // aBST.Find("AA"); // Smaller than smallest
+    // cout << "--Find Larger than Largest--" << endl;
     // aBST.Find("ZZZ"); // Larger than largest
 
+    // cout << "--Find Min--" << endl;
     // aBST.FindMin();
+    // cout << "--Find Max--" << endl;
     // aBST.FindMax(); 
 
     //Task 3 
+    // cout << "Task 3" << endl;
+    // cout << "======" << endl;
     // cout << "--Original Tree--" << endl;
     // aBST.PrintLevelOrder(3);
     // cout << "--Remove Leaf--" << endl;
     // aBST.Remove("DJJ"); 
     // aBST.PrintLevelOrder(3);
+    // aBST.Find("DJJ");
     // cout << "--Remove Right Only--" << endl;
     // aBST.Remove("AAA");
     // aBST.PrintLevelOrder(3);
+    // aBST.Find("AAA");
     // cout << "--Remove Left Only--" << endl;
     // aBST.Remove("BOS");
     // aBST.PrintLevelOrder(3);
+    // aBST.Find("BOS");
     // cout << "--Remove Middle Node--" << endl;
     // aBST.Remove("EGS");
     // aBST.PrintLevelOrder(3);
+    // aBST.Find("EGS");
     // cout << "--Remove Root--" << endl;
     // aBST.Remove("GKA");
     // aBST.PrintLevelOrder(3);
+    // aBST.Find("GKA");
 
+    // cout << "--Add New Node QQQ--" << endl;
     // Airport* newAiport = new Airport("Q Airport", "Q City", "United States of America", "QQQ", "BAQQ", 10.1, 11.1);
     // aBST.Insert(newAiport);
     // aBST.Find("QQQ");
@@ -258,6 +278,8 @@ int main() {
     // aBST.Find("QQQ");
 
     // Task 4
+    // cout << "Task 4" << endl;
+    // cout << "======" << endl;
     // aBST.List();
 
     // ofstream outFile("outFile.dat");
@@ -267,6 +289,7 @@ int main() {
     //     return 1;
     // }
 
+    // cout << "--Write to File--" << endl;
     // aBST.Save(outFile);
 
     // outFile.close();
@@ -278,6 +301,7 @@ int main() {
     //     return 1;
     // }
 
+    // cout << "--Load From File Made--" << endl;
     // AirportBST newBST = aBST.Load(inFile);
     // int height = newBST.GetHeight();
     // double avgDepth = newBST.AvgDepth();
@@ -314,9 +338,13 @@ int main() {
     // aBST.Find("QQQ");
 
     // Task 5
+    // cout << "Task 5" << endl;
+    // cout << "======" << endl;
     // aBST.Range("BOS", "BWI");
 
     // Task 6
+    cout << "Task 6" << endl;
+    cout << "======" << endl;
     ShapeExperiement(airportFile);
 
     // aBST.Free();
