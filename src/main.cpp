@@ -32,6 +32,7 @@ vector<Airport*> LoadFile(ifstream& file) {
                 }
             } else if (ch == ',' && !inQuotes) {
                 fields.push_back(item);
+                item = "";
             } else {
                 item += ch;
             }
@@ -46,31 +47,35 @@ vector<Airport*> LoadFile(ifstream& file) {
             string icao = fields[5];
             double lat = stod(fields[6]);
             double lon = stod(fields[7]);
-            Airport newAirport = Airport(name, city, country, iata, icao, lat, lon);
-            airports.push_back(&newAirport);
+            Airport* newAirport = new Airport(name, city, country, iata, icao, lat, lon);
+            airports.push_back(newAirport);
         }
     }
 
     return airports;
 }
 
-AirportBST BuildTree(vector<Airport*> airports) {
+AirportBST BuildTree(vector<Airport*>& airports) {
     int n = airports.size();
     int added = 0;
     int duplicates = 0;
 
     AirportBST AirportTree = AirportBST();
 
+    vector<Airport*> unique;
     for (int i = 0; i < n; i++) {
         if (AirportTree.Insert(airports[i]) == "Added") {
             added++;
+            unique.push_back(airports[i]);
         } else {
             duplicates++;
+            delete airports[i];
         }
     }
+    airports = unique;
 
     int height = AirportTree.GetHeight();
-    int avgDepth = AirportTree.AvgDepth();
+    double avgDepth = AirportTree.AvgDepth();
 
     cout << "Loaded: " << added << " airports, Duplicates: " << duplicates << endl;
     cout << "Height: " << height << "\t Average Depth: " << avgDepth << endl;
@@ -101,19 +106,19 @@ void ShapeExperiement(ifstream& file) {
     auto start = chrono::high_resolution_clock::now();
 
     for (int i = 10000; i > 0; i--) {
-        firstBST.Find(generateRandomCode());
+        firstBST.FindNoPrint(generateRandomCode());
     }
 
     auto stop = chrono::high_resolution_clock::now();
     auto fileOrderDuration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
     int fileOrderHeight = firstBST.GetHeight();
-    int fileOrderAvgDepth = firstBST.AvgDepth();
+    double fileOrderAvgDepth = firstBST.AvgDepth();
 
     cout << "File Order Tree" << endl;
     cout << "===============" << endl; 
     cout << "Height: " << fileOrderHeight << " | Average Depth: " << fileOrderAvgDepth << " |" << endl;
-    cout << "Time of 10,000 Searchs: " << fileOrderDuration.count() << endl; 
+    cout << "Time of 10,000 Searchs: " << fileOrderDuration.count() << " milliseconds" << endl; 
     cout << endl; 
 
     sort(airports.begin(), airports.end(), [](const Airport* a, const Airport* b) {
@@ -124,26 +129,26 @@ void ShapeExperiement(ifstream& file) {
     int n = airports.size();
     for (int i = 0; i < n; i++) {
         Airport* currAirport = airports[i];
-        Airport toAdd = Airport(currAirport->name, currAirport->city, currAirport->country, currAirport->iataCode, currAirport->icaoCode, currAirport->latitude, currAirport->longitude);
-        secondBST.Insert(&toAdd);
+        Airport* toAdd = new Airport(currAirport->name, currAirport->city, currAirport->country, currAirport->iataCode, currAirport->icaoCode, currAirport->latitude, currAirport->longitude);
+        secondBST.Insert(toAdd);
     }
 
     start = chrono::high_resolution_clock::now();
 
     for (int i = 10000; i > 0; i--) {
-        secondBST.Find(generateRandomCode());
+        secondBST.FindNoPrint(generateRandomCode());
     }
 
     stop = chrono::high_resolution_clock::now();
     auto sortedOrderDuration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
     int sortedOrderHeight = secondBST.GetHeight();
-    int sortedOrderAvgDepth = secondBST.AvgDepth();
+    double sortedOrderAvgDepth = secondBST.AvgDepth();
 
     cout << "Sorted Order Tree" << endl;
     cout << "===============" << endl; 
     cout << "Height: " << sortedOrderHeight << " | Average Depth: " << sortedOrderAvgDepth << " |" << endl;
-    cout << "Time of 10,000 Searchs: " << sortedOrderDuration.count() << endl; 
+    cout << "Time of 10,000 Searchs: " << sortedOrderDuration.count() << " milliseconds" << endl; 
     cout << endl;
 
     AirportBST thirdBST = AirportBST();
@@ -152,17 +157,137 @@ void ShapeExperiement(ifstream& file) {
     start = chrono::high_resolution_clock::now();
 
     for (int i = 10000; i > 0; i--) {
-        thirdBST.Find(generateRandomCode());
+        thirdBST.FindNoPrint(generateRandomCode());
     }
 
     stop = chrono::high_resolution_clock::now();
     auto balancedDuration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
     int balancedHeight = thirdBST.GetHeight();
-    int balancedAvgDepth = thirdBST.AvgDepth();
+    double balancedAvgDepth = thirdBST.AvgDepth();
 
     cout << "Sorted Order Tree" << endl;
     cout << "===============" << endl; 
     cout << "Height: " << balancedHeight << " | Average Depth: " << balancedAvgDepth << " |" << endl;
-    cout << "Time of 10,000 Searchs: " << balancedDuration.count() << endl; 
-}   
+    cout << "Time of 10,000 Searchs: " << balancedDuration.count() << " milliseconds" << endl; 
+
+    firstBST.Free();
+    secondBST.Free();
+    thirdBST.Free();
+}
+
+int main() {
+    // Task 1
+    ifstream airportFile("data/airports.dat");
+
+    if(!airportFile.is_open()) {
+        cerr << "Error opening the file!"; 
+        return 1; 
+    }
+
+    // vector<Airport*> airports = LoadFile(airportFile);
+    // AirportBST aBST = BuildTree(airports); 
+
+    // Task 2
+    // aBST.Find("GKA"); // Root
+    // aBST.Find("DJJ"); // Leaf
+    // aBST.Find("BOS"); // Deep
+    // aBST.Find("XYZ"); // Not in tree
+    // aBST.Find("AA"); // Smaller than smallest
+    // aBST.Find("ZZZ"); // Larger than largest
+
+    // aBST.FindMin();
+    // aBST.FindMax(); 
+
+    //Task 3 
+    // cout << "--Original Tree--" << endl;
+    // aBST.PrintLevelOrder(3);
+    // cout << "--Remove Leaf--" << endl;
+    // aBST.Remove("DJJ"); 
+    // aBST.PrintLevelOrder(3);
+    // cout << "--Remove Right Only--" << endl;
+    // aBST.Remove("AAA");
+    // aBST.PrintLevelOrder(3);
+    // cout << "--Remove Left Only--" << endl;
+    // aBST.Remove("BOS");
+    // aBST.PrintLevelOrder(3);
+    // cout << "--Remove Middle Node--" << endl;
+    // aBST.Remove("EGS");
+    // aBST.PrintLevelOrder(3);
+    // cout << "--Remove Root--" << endl;
+    // aBST.Remove("GKA");
+    // aBST.PrintLevelOrder(3);
+
+    // Airport* newAiport = new Airport("Q Airport", "Q City", "United States of America", "QQQ", "BAQQ", 10.1, 11.1);
+    // aBST.Insert(newAiport);
+    // aBST.Find("QQQ");
+    // cout << "--Remove QQQ--" << endl;
+    // aBST.Remove("QQQ");
+    // aBST.Find("QQQ");
+
+    // Task 4
+    // aBST.List();
+
+    // ofstream outFile("outFile.dat");
+
+    // if (!outFile.is_open()) {
+    //     cerr << "Error opening the file!"; 
+    //     return 1;
+    // }
+
+    // aBST.Save(outFile);
+
+    // outFile.close();
+
+    // ifstream inFile("outFile.dat");
+
+    // if (!inFile.is_open()) {
+    //     cerr << "Error opening the file!"; 
+    //     return 1;
+    // }
+
+    // AirportBST newBST = aBST.Load(inFile);
+    // int height = newBST.GetHeight();
+    // double avgDepth = newBST.AvgDepth();
+
+    // cout << "--Reconstructed Tree--" << endl;
+    // cout << "Height: " << height << "\t Average Depth: " << avgDepth << endl;
+    // newBST.PrintLevelOrder(3);
+
+    // cout << boolalpha;
+    // cout << "--Original Tree--" << endl;
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+    // cout << "--Remove Leaf--" << endl;
+    // aBST.Remove("DJJ"); 
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+    // cout << "--Remove Right Only--" << endl;
+    // aBST.Remove("AAA");
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+    // cout << "--Remove Left Only--" << endl;
+    // aBST.Remove("BOS");
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+    // cout << "--Remove Middle Node--" << endl;
+    // aBST.Remove("EGS");
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+    // cout << "--Remove Root--" << endl;
+    // aBST.Remove("GKA");
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+
+    // Airport* newAiport = new Airport("Q Airport", "Q City", "United States of America", "QQQ", "BAQQ", 10.1, 11.1);
+    // aBST.Insert(newAiport);
+    // aBST.Find("QQQ");
+    // cout << "--Remove QQQ--" << endl;
+    // aBST.Remove("QQQ");
+    // cout << "Valid Tree: " << aBST.Validate() << endl;
+    // aBST.Find("QQQ");
+
+    // Task 5
+    // aBST.Range("BOS", "BWI");
+
+    // Task 6
+    ShapeExperiement(airportFile);
+
+    // aBST.Free();
+    // newBST.Free();
+    return 0;
+}

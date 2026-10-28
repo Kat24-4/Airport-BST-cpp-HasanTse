@@ -36,7 +36,7 @@ int AirportBST::Height(Airport* node)
 Airport* AirportBST::RecursiveRemove(Airport* node, string code)
 {
     if (node == nullptr){
-        return;
+        return nullptr;
     }
     if (code < node->iataCode){
         node->left = RecursiveRemove(node->left, code);
@@ -44,10 +44,14 @@ Airport* AirportBST::RecursiveRemove(Airport* node, string code)
         node->right = RecursiveRemove(node->right, code);   
     } else {
         if (node->left == nullptr) {
-            return node->right;
+            Airport* right = node->right;
+            delete node; 
+            return right;
         }
         if (node->right == nullptr) {
-            return node->left;
+            Airport* left = node->left;
+            delete node;
+            return left;
         }
         Airport* s = node->right;
         while (s->left != nullptr){
@@ -101,20 +105,24 @@ bool AirportBST::RecursiveValidate(Airport* node, string minKey, string maxKey) 
     return leftValid && rightValid; 
 }
 
-void AirportBST::RecursiveRange(Airport* node, string from, string to, int& nodesVisited)
+void AirportBST::RecursiveRange(Airport* node, string from, string to, int& nodesVisited, int& nodesInRange)
 {
     if (node == nullptr) {
         return;
     }
     nodesVisited++;
 
-    if (node->left->iataCode >= from) {
-        RecursiveRange(node->left, from, to, nodesVisited);
+    if (node->iataCode > from) {
+        RecursiveRange(node->left, from, to, nodesVisited, nodesInRange);
     }
-    cout << node->iataCode;
 
-    if (node->right->iataCode <= to) {
-        RecursiveRange(node->right, from, to, nodesVisited);
+    if(node->iataCode >= from && node->iataCode <= to) {
+        nodesInRange++;
+        cout << node->iataCode << " ";
+    }
+
+    if (node->iataCode < to) {
+        RecursiveRange(node->right, from, to, nodesVisited, nodesInRange);
     }
 }
 
@@ -125,10 +133,17 @@ Airport* AirportBST::RecursiveBuildBalanced(vector<Airport*> airports, int low, 
 
     int mid = (low + high) / 2;
     Airport* currNode = airports[mid]; 
-    Airport newNode = Airport(currNode->name, currNode->city, currNode->country, currNode->iataCode, currNode->icaoCode, currNode->latitude, currNode->longitude);
-    newNode.left = RecursiveBuildBalanced(airports, low, mid - 1);
-    newNode.right = RecursiveBuildBalanced(airports, mid + 1, high);
-    return &newNode; 
+    Airport* newNode = new Airport(currNode->name, currNode->city, currNode->country, currNode->iataCode, currNode->icaoCode, currNode->latitude, currNode->longitude);
+    newNode->left = RecursiveBuildBalanced(airports, low, mid - 1);
+    newNode->right = RecursiveBuildBalanced(airports, mid + 1, high);
+    return newNode; 
+}
+
+void AirportBST::RecursiveFree(Airport* node) {
+    if (node == nullptr) return;
+    RecursiveFree(node->left);
+    RecursiveFree(node->right);
+    delete node;   // not free(node)
 }
 
 // Public Functions
@@ -173,7 +188,7 @@ double AirportBST::AvgDepth()
 {
     int totalNodes = 0;
     int sumDepth = SumDepth(root, 0, totalNodes);
-    return sumDepth / totalNodes;
+    return static_cast<double>(sumDepth) / totalNodes;
 }
 
 Airport* AirportBST::Find(string code)
@@ -207,6 +222,33 @@ Airport* AirportBST::Find(string code)
     }
 
     cout << "(NULL) not found" << endl;
+    return nullptr; 
+}
+
+Airport* AirportBST::FindNoPrint(string code)
+{
+    Airport* curr = root;
+    int comparisons = 0;
+
+    while (curr != nullptr)
+    {
+        comparisons++;
+
+        if (code == curr->iataCode)
+        {
+            return curr;
+        }
+        else if (code < curr->iataCode)
+        {
+            curr = curr->left;
+        }
+        else
+        {
+            curr = curr->right;
+        }
+    }
+
+    return nullptr; 
 }
 
 void AirportBST::FindMin()
@@ -289,18 +331,18 @@ void AirportBST::Save(ofstream &file) {
 }
 
 AirportBST AirportBST::Load(ifstream &file) {
+    AirportBST newBST = AirportBST();
     if (!file.is_open()) {
         cout << "Invalid File" << endl;
-        return; 
+        return newBST; 
     }
 
-    string line; 
-    AirportBST newBST = AirportBST();
+    string line;
 
     while (getline(file, line)) {
-        Airport* currNode = Find(line);
-        Airport newNode = Airport(currNode->name, currNode->city, currNode->country, currNode->iataCode, currNode->icaoCode, currNode->latitude, currNode->longitude);
-        newBST.Insert(&newNode);
+        Airport* currNode = FindNoPrint(line);
+        Airport* newNode = new Airport(currNode->name, currNode->city, currNode->country, currNode->iataCode, currNode->icaoCode, currNode->latitude, currNode->longitude);
+        newBST.Insert(newNode);
     }
 
     return newBST;
@@ -310,13 +352,20 @@ bool AirportBST::Validate() {
     return RecursiveValidate(root, "", "");
 }
 
-int AirportBST::Range(string from, string to)
+void AirportBST::Range(string from, string to)
 {
     int nodesVisited = 0;
-    RecursiveRange(root, from, to, nodesVisited);
-    return nodesVisited;
+    int nodesInRange = 0;
+    RecursiveRange(root, from, to, nodesVisited, nodesInRange);
+    cout << endl;
+    cout << nodesInRange << " airports, " << nodesVisited << " nodes visited" << endl;
 }
 
 void AirportBST::BuildBalanced(vector<Airport*> airports, int n) {
     root = RecursiveBuildBalanced(airports, 0, n - 1);
+}
+
+void AirportBST::Free() {
+    RecursiveFree(root);
+    root = nullptr;
 }

@@ -16,8 +16,9 @@ class AirportBST {
         void RecursiveList(Airport* node);
         void RecursiveSave(Airport* node, ofstream &file);
         bool RecursiveValidate(Airport* node, string minKey, string maxKey);
-        void RecursiveRange(Airport* node, string from, string to, int& nodesVisited);
+        void RecursiveRange(Airport* node, string from, string to, int& nodesVisited, int& nodesInRange);
         Airport* RecursiveBuildBalanced(vector<Airport*> airports, int low, int high);
+        void RecursiveFree(Airport* node);
 
     public:
         AirportBST();
@@ -25,14 +26,16 @@ class AirportBST {
         int GetHeight();
         double AvgDepth();
         Airport* Find(string code);
+        Airport* FindNoPrint(string code);
         void FindMin();
         void FindMax();
         void Remove(string code);
-        void AirportBST::PrintLevelOrder(int levels);
+        void PrintLevelOrder(int levels);
         void List();
         void Save(ofstream &file);
         AirportBST Load(ifstream &file);
         bool Validate();
-        int Range(string from, string to);
+        void Range(string from, string to);
         void BuildBalanced(vector<Airport*> airports, int n);
+        void Free();
 };
