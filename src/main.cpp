@@ -166,14 +166,46 @@ void ShapeExperiement(ifstream& file) {
     int balancedHeight = thirdBST.GetHeight();
     double balancedAvgDepth = thirdBST.AvgDepth();
 
-    cout << "Sorted Order Tree" << endl;
+    cout << "Balanced Tree" << endl;
     cout << "===============" << endl; 
     cout << "Height: " << balancedHeight << " | Average Depth: " << balancedAvgDepth << " |" << endl;
     cout << "Time of 10,000 Searchs: " << balancedDuration.count() << " milliseconds" << endl; 
+    cout << endl;
+
+    random_device rd;
+    mt19937 generator(rd());
+    shuffle(airports.begin(), airports.end(), generator);
+
+    AirportBST fourthBST = AirportBST(); 
+    n = airports.size();
+    for (int i = 0; i < n; i++) {
+        Airport* currAirport = airports[i];
+        Airport* toAdd = new Airport(currAirport->name, currAirport->city, currAirport->country, currAirport->iataCode, currAirport->icaoCode, currAirport->latitude, currAirport->longitude);
+        fourthBST.Insert(toAdd);
+    }
+
+    start = chrono::high_resolution_clock::now();
+
+    for (int i = 10000; i > 0; i--) {
+        fourthBST.FindNoPrint(generateRandomCode());
+    }
+
+    stop = chrono::high_resolution_clock::now();
+    auto randomDuration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+    int randomHeight = fourthBST.GetHeight();
+    double randomAvgDepth = fourthBST.AvgDepth();
+
+    cout << "Random Order Tree" << endl;
+    cout << "===============" << endl; 
+    cout << "Height: " << randomHeight << " | Average Depth: " << randomAvgDepth << " |" << endl;
+    cout << "Time of 10,000 Searchs: " << randomDuration.count() << " milliseconds" << endl; 
+
 
     firstBST.Free();
     secondBST.Free();
     thirdBST.Free();
+    fourthBST.Free();
 }
 
 int main() {
