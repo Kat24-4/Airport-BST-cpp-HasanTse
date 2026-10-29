@@ -39,5 +39,8 @@ To run the project run `./airports` in your BASH terminal and follow the prompts
 ### Task 6
 <img width="566" height="533" alt="Task6" src="https://github.com/user-attachments/assets/f8d84e09-c09b-4e19-bef6-6000b69aae1f" />
 
+## Sample Session
+To see a sample session of the code being run, watch "AirportMiniProjectSampleSession.mp4" in the `/docs` folder
+
 ## Credits 
 The data used was pulled from OpenFlights.org.
