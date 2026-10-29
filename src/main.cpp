@@ -208,7 +208,25 @@ void ShapeExperiement(ifstream& file) {
     fourthBST.Free();
 }
 
+void Menu() {
+    cout << "========================================================" << endl;
+    cout << "Please select a Task to run from the following options: " << endl;
+    cout << "\tTask 2: Search (1)" << endl;
+    cout << "\tTask 3: Delete (2)" << endl;
+    cout << "\tTask 4a: List (3)" << endl;
+    cout << "\tTask 4b: Save and Load (4)" << endl;
+    cout << "\tTask 4c: Validate (5)" << endl;
+    cout << "\tTask 5: Range (6)" << endl; 
+    cout << "\tExit: (7)" << endl;
+    cout << "========================================================" << endl;
+    cout << "Enter: ";
+}
+
 int main() {
+
+    cout << "--EECE 7205 Aiport Mini Project Hasan and Tse--" << endl;
+    cout << "Building Tree..." << endl; 
+
     // Task 1
     // cout << "Task 1" << endl;
     // cout << "======" << endl;
@@ -219,8 +237,113 @@ int main() {
         return 1; 
     }
 
-    // vector<Airport*> airports = LoadFile(airportFile);
-    // AirportBST aBST = BuildTree(airports); 
+    vector<Airport*> airports = LoadFile(airportFile);
+    AirportBST aBST = BuildTree(airports); 
+
+    bool exit = false; 
+
+    while (exit == false) {
+        int task;
+        Menu(); 
+        
+        cin >> task;
+
+        cout << "========================================================" << endl;
+        cout << endl;
+
+        switch (task)
+        {
+        case 1: {
+            string key;
+            cout << "Enter an IATA Code to Search For (3 capital letters, BOS): ";
+            cin >> key;
+            cout << "Finding " << key << "..." << endl; 
+            aBST.Find(key);
+            cout << endl;
+            break;
+        } case 2 : {
+            string key;
+            cout << "Enter an IATA Code to Delete (3 capital letters, BOS): ";
+            cin >> key;
+            cout << "Deleting " << key << "..." << endl; 
+            aBST.Remove(key);
+            bool valid = aBST.Validate();
+            if (valid) {
+                cout << "Deleted " << key << "\tvalidate: OK" << endl;
+            } else {
+                cout << "Deleted " << key << "\tvalidate: ERROR" << endl;
+            }
+            cout << endl;
+            break;
+        } case 3 : {
+            cout << "Listing All Values:" << endl;
+            aBST.List();
+            cout << endl;
+            break;
+        } case 4 : {
+            ofstream outFile("outFile.dat");
+
+            if (!outFile.is_open()) {
+                cerr << "Error opening the file!"; 
+                return 1;
+            }
+
+            cout << "Writing to file \"outFile.dat\"" << "..." << endl;
+            aBST.Save(outFile);
+
+            outFile.close();
+
+            ifstream inFile("outFile.dat");
+
+            if (!inFile.is_open()) {
+                cerr << "Error opening the file!"; 
+                return 1;
+            }
+
+            cout << "Loading from file \"outFile.dat\"" << "..." << endl;
+            AirportBST newBST = aBST.Load(inFile);
+            int height = newBST.GetHeight();
+            double avgDepth = newBST.AvgDepth();
+
+            cout << "--Reconstructed Tree--" << endl;
+            cout << "Height: " << height << "\t Average Depth: " << avgDepth << endl;
+            newBST.PrintLevelOrder(3);
+
+            newBST.Free();
+            cout << endl;
+            break;
+        } case 5 : {
+            cout << "Validating Tree: "; 
+            bool valid = aBST.Validate();
+            if (valid) {
+                cout << "Status -> OK" << endl;
+            } else {
+                cout << "Status -> ERROR" << endl;
+            }
+            cout << endl;
+            break;
+        } case 6 : {
+            string low;
+            string high;
+            cout << "Enter Low of Range IATA Code (3 capital letters, BOS): ";
+            cin >> low;
+            cout << "Enter High of Range IATA Code (3 capital letters, BOS): ";
+            cin >> high;
+            cout << "Finding Range [" << low << ", " << high << "]" << "..." << endl;
+            aBST.Range(low, high);
+            cout << endl;
+            break;
+        } case 7 : {
+            cout << "Goodbye" << endl; 
+            exit = true; 
+            break;
+        }
+        default:
+            cout << "Invalid input. Please try again." << endl; 
+            cout << endl;
+            break;
+        }
+    }
 
     // Task 2
     // cout << "Task 2" << endl;
@@ -343,11 +466,11 @@ int main() {
     // aBST.Range("BOS", "BWI");
 
     // Task 6
-    cout << "Task 6" << endl;
-    cout << "======" << endl;
-    ShapeExperiement(airportFile);
+    // cout << "Task 6" << endl;
+    // cout << "======" << endl;
+    // ShapeExperiement(airportFile);
 
-    // aBST.Free();
+    aBST.Free();
     // newBST.Free();
     return 0;
 }
